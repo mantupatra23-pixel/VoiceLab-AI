@@ -8,43 +8,61 @@
 <body>
 
 <div class="container">
+
     <h1>🔥 VoiceLab AI</h1>
 
-    <input id="text" placeholder="Enter your text">
-
-    <select id="voice">
-        <option value="female_india">Female India</option>
-        <option value="male_india">Male India</option>
-        <option value="hindi_female">Hindi Female</option>
-        <option value="hindi_male">Hindi Male</option>
-    </select>
-
-    <button onclick="generate()">🎧 Generate Voice</button>
-
-    <a id="download" style="display:none;">⬇ Download</a>
+    <textarea id="text" placeholder="Enter your text"></textarea>
 
     <br><br>
 
-    <button onclick="buyCredits()">💳 Buy Credits</button>
+    <select id="voice">
+        <option value="en-US-AriaNeural">English Female</option>
+        <option value="hi-IN-SwaraNeural">Hindi Female</option>
+        <option value="en-US-GuyNeural">English Male</option>
+        <option value="hi-IN-MadhurNeural">Hindi Male</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="generate()">🎧 Generate Voice</button>
+
+    <br><br>
+
+    <audio id="audio" controls style="display:none;"></audio>
+
+    <br>
+
+    <a id="download" style="display:none;" download="voice.mp3">⬇ Download</a>
+
+    <br><br>
+
+    <button onclick="buyCredits()">💳 Buy Credits ₹49</button>
+
 </div>
 
 <script>
+
 async function generate(){
     let text = document.getElementById("text").value;
+    let voice = document.getElementById("voice").value;
 
     let res = await fetch("/generate",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({text:text})
+        body:JSON.stringify({text:text, voice:voice})
     });
 
     if(res.status != 200){
-        alert("Login or No Credits");
+        alert("Login karo ya credits khatam ❌");
         return;
     }
 
     let blob = await res.blob();
     let url = URL.createObjectURL(blob);
+
+    let audio = document.getElementById("audio");
+    audio.src = url;
+    audio.style.display = "block";
 
     let link = document.getElementById("download");
     link.href = url;
@@ -59,6 +77,7 @@ async function buyCredits(){
     let data = await res.json();
     alert("Order Created ₹49 (Demo)");
 }
+
 </script>
 
 </body>
