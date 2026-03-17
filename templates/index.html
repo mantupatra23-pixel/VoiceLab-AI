@@ -1,135 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>VoiceLab AI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
-      color: white;
-      text-align: center;
-    }
-
-    .container {
-      padding: 20px;
-      max-width: 500px;
-      margin: auto;
-    }
-
-    h1 {
-      color: #00ffd5;
-    }
-
-    textarea {
-      width: 100%;
-      height: 120px;
-      border-radius: 10px;
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-    }
-
-    select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 10px;
-      border: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 10px;
-      background: #00ffd5;
-      color: black;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #00c2a8;
-    }
-
-    .footer {
-      margin-top: 30px;
-      font-size: 12px;
-      opacity: 0.6;
-    }
-
-    .loader {
-      display: none;
-      margin-top: 10px;
-    }
-  </style>
+    <title>VoiceLab AI</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
 <div class="container">
+    <h1>🔥 VoiceLab AI</h1>
 
-  <h1>🔥 VoiceLab AI</h1>
-  <p>Convert Text → Real AI Voice 🎙️</p>
+    <input id="text" placeholder="Enter your text">
 
-  <textarea id="text" placeholder="Type your script..."></textarea>
+    <select id="voice">
+        <option value="female_india">Female India</option>
+        <option value="male_india">Male India</option>
+        <option value="hindi_female">Hindi Female</option>
+        <option value="hindi_male">Hindi Male</option>
+    </select>
 
-  <select id="voice">
-    <option value="hi-IN-MadhurNeural">Hindi Male</option>
-    <option value="hi-IN-SwaraNeural">Hindi Female</option>
-    <option value="en-US-GuyNeural">English Male</option>
-    <option value="en-US-JennyNeural">English Female</option>
-  </select>
+    <button onclick="generate()">🎧 Generate Voice</button>
 
-  <button onclick="generate()">Generate & Download</button>
+    <a id="download" style="display:none;">⬇ Download</a>
 
-  <div class="loader" id="loader">⏳ Generating...</div>
+    <br><br>
 
-  <div class="footer">
-    VoiceLab AI © 2026
-  </div>
-
+    <button onclick="buyCredits()">💳 Buy Credits</button>
 </div>
 
 <script>
-function generate() {
-  let text = document.getElementById("text").value;
-  let voice = document.getElementById("voice").value;
+async function generate(){
+    let text = document.getElementById("text").value;
 
-  if(text.trim() === ""){
-    alert("Enter text first!");
-    return;
-  }
+    let res = await fetch("/generate",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({text:text})
+    });
 
-  document.getElementById("loader").style.display = "block";
+    if(res.status != 200){
+        alert("Login or No Credits");
+        return;
+    }
 
-  let formData = new FormData();
-  formData.append("text", text);
-  formData.append("voice", voice);
+    let blob = await res.blob();
+    let url = URL.createObjectURL(blob);
 
-  fetch("/generate", {
-    method: "POST",
-    body: formData
-  })
-  .then(res => res.blob())
-  .then(blob => {
-    document.getElementById("loader").style.display = "none";
+    let link = document.getElementById("download");
+    link.href = url;
+    link.style.display = "block";
+}
 
-    let url = window.URL.createObjectURL(blob);
-    let a = document.createElement("a");
-    a.href = url;
-    a.download = "voice.mp3";
-    a.click();
-  })
-  .catch(() => {
-    document.getElementById("loader").style.display = "none";
-    alert("Error generating voice!");
-  });
+async function buyCredits(){
+    let res = await fetch("/create-order",{
+        method:"POST"
+    });
+
+    let data = await res.json();
+    alert("Order Created ₹49 (Demo)");
 }
 </script>
 
