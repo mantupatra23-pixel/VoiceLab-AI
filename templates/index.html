@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VoiceLab AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #00ffd5;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #00ffd5;
+      color: black;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #00c2a8;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    .loader {
+      display: none;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🔥 VoiceLab AI</h1>
+  <p>Convert Text → Real AI Voice 🎙️</p>
+
+  <textarea id="text" placeholder="Type your script..."></textarea>
+
+  <select id="voice">
+    <option value="hi-IN-MadhurNeural">Hindi Male</option>
+    <option value="hi-IN-SwaraNeural">Hindi Female</option>
+    <option value="en-US-GuyNeural">English Male</option>
+    <option value="en-US-JennyNeural">English Female</option>
+  </select>
+
+  <button onclick="generate()">Generate & Download</button>
+
+  <div class="loader" id="loader">⏳ Generating...</div>
+
+  <div class="footer">
+    VoiceLab AI © 2026
+  </div>
+
+</div>
+
+<script>
+function generate() {
+  let text = document.getElementById("text").value;
+  let voice = document.getElementById("voice").value;
+
+  if(text.trim() === ""){
+    alert("Enter text first!");
+    return;
+  }
+
+  document.getElementById("loader").style.display = "block";
+
+  let formData = new FormData();
+  formData.append("text", text);
+  formData.append("voice", voice);
+
+  fetch("/generate", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.blob())
+  .then(blob => {
+    document.getElementById("loader").style.display = "none";
+
+    let url = window.URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "voice.mp3";
+    a.click();
+  })
+  .catch(() => {
+    document.getElementById("loader").style.display = "none";
+    alert("Error generating voice!");
+  });
+}
+</script>
+
+</body>
+</html>
