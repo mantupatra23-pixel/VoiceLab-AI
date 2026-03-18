@@ -1,84 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>VoiceLab AI</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>🔥 VoiceLab AI</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="container">
-
     <h1>🔥 VoiceLab AI</h1>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <div>
+        <button onclick="register()">Register</button>
+        <button onclick="login()">Login</button>
+    </div>
 
     <textarea id="text" placeholder="Enter your text"></textarea>
 
-    <br><br>
-
     <select id="voice">
-        <option value="en-US-AriaNeural">English Female</option>
-        <option value="hi-IN-SwaraNeural">Hindi Female</option>
-        <option value="en-US-GuyNeural">English Male</option>
-        <option value="hi-IN-MadhurNeural">Hindi Male</option>
+        <option value="female_india">English Female</option>
+        <option value="male_india">English Male</option>
+        <option value="hindi_female">Hindi Female</option>
+        <option value="hindi_male">Hindi Male</option>
     </select>
 
-    <br><br>
+    <div>
+        <button onclick="generate()">🎧 Generate Voice</button>
+        <button onclick="buy()">💳 Buy Credits ₹49</button>
+    </div>
 
-    <button onclick="generate()">🎧 Generate Voice</button>
-
-    <br><br>
-
-    <audio id="audio" controls style="display:none;"></audio>
-
-    <br>
-
-    <a id="download" style="display:none;" download="voice.mp3">⬇ Download</a>
-
-    <br><br>
-
-    <button onclick="buyCredits()">💳 Buy Credits ₹49</button>
-
+    <audio id="audio" controls></audio>
 </div>
 
-<script>
-
-async function generate(){
-    let text = document.getElementById("text").value;
-    let voice = document.getElementById("voice").value;
-
-    let res = await fetch("/generate",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({text:text, voice:voice})
-    });
-
-    if(res.status != 200){
-        alert("Login karo ya credits khatam ❌");
-        return;
-    }
-
-    let blob = await res.blob();
-    let url = URL.createObjectURL(blob);
-
-    let audio = document.getElementById("audio");
-    audio.src = url;
-    audio.style.display = "block";
-
-    let link = document.getElementById("download");
-    link.href = url;
-    link.style.display = "block";
-}
-
-async function buyCredits(){
-    let res = await fetch("/create-order",{
-        method:"POST"
-    });
-
-    let data = await res.json();
-    alert("Order Created ₹49 (Demo)");
-}
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>

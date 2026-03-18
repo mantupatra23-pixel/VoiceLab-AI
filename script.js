@@ -1,48 +1,66 @@
-async function generate() {
-    let text = document.getElementById("text").value;
-    let voice = document.getElementById("voice").value;
+const BASE = "http://34.201.111.254:5000";
 
-    if (!text) {
-        alert("Text enter karo ❌");
-        return;
-    }
-
-    let res = await fetch("/generate", {
+// REGISTER
+async function register() {
+    let res = await fetch(BASE + "/register", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: {"Content-Type": "application/json"},
+        credentials: "include",
         body: JSON.stringify({
-            text: text,
-            voice: voice
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        })
+    });
+
+    let data = await res.json();
+    alert(data.msg);
+}
+
+// LOGIN
+async function login() {
+    let res = await fetch(BASE + "/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        credentials: "include",
+        body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        })
+    });
+
+    let data = await res.json();
+    alert(data.msg);
+}
+
+// GENERATE
+async function generate() {
+    let res = await fetch(BASE + "/generate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        credentials: "include",
+        body: JSON.stringify({
+            text: document.getElementById("text").value,
+            voice: document.getElementById("voice").value
         })
     });
 
     if (res.status !== 200) {
-        alert("Error: Login ya credits issue ❌");
+        alert("Login first or no credits");
         return;
     }
 
     let blob = await res.blob();
     let url = URL.createObjectURL(blob);
-
-    // 🎧 Play audio
-    let audio = document.getElementById("audio");
-    audio.src = url;
-    audio.style.display = "block";
-
-    // ⬇ Download link
-    let link = document.getElementById("download");
-    link.href = url;
-    link.style.display = "block";
+    document.getElementById("audio").src = url;
 }
 
-// 💳 Buy credits
-async function buyCredits() {
-    let res = await fetch("/create-order", {
-        method: "POST"
+// BUY
+async function buy() {
+    let res = await fetch(BASE + "/create-order", {
+        method: "POST",
+        credentials: "include"
     });
 
     let data = await res.json();
-    alert("Order Created ₹49 (Demo)");
+    alert("Order ID: " + data.id);
 }
